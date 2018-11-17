@@ -1,6 +1,6 @@
 from flask import request, json, Response, Blueprint, g
 from ..models.UserModel import UserModel, UserSchema
-from ..shared.Authentication import Auth
+from ..Auth.auth import Auth
 
 user_api = Blueprint('user_api', __name__)
 user_schema = UserSchema()
@@ -36,7 +36,9 @@ def get_a_user():
 
 	ser_user = user_schema.dump(user).data
 	return custom_response(ser_user, 200)
-
+	
+@user_api.route('/me', methods=['GET'])
+@Auth.auth_required
 def get_me():
 
 	user = UserModel.get_one_user(g.user.get('id'))
