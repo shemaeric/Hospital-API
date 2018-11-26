@@ -24,6 +24,7 @@ def create():
 
 	ser_data = user_schema.dump(user).data
 	token = Auth.generate_token(ser_data.get('id'))
+	print("createghnd",token)
 	return custom_response({'jwt_token': token}, 201)
 
 @user_api.route('/me', methods=['GET'])
@@ -45,6 +46,7 @@ def get_me():
 	ser_user = user_schema.dump(user).data
 	return custom_response(ser_user, 200)
 
+@user_api.route('/login', methods=['POST'])
 def login():
 
 	req_data = request.get_json(force = True)
@@ -61,13 +63,14 @@ def login():
 	if not user.check_hash(data.get('password')):
 		return custom_response({'error': 'invalid credentials'}, 400)
 	ser_data = user_schema.load(user).data
-	token = Auth.generate_token(ser_data.get('id'))
-	return custom_response(200)
+	token = Auth.generate_token(ser_data)
+	print('hellllloheaven',token)
+	return custom_response({'jwt_token': token}, 200)
 
 def custom_response(res, status_code):
 
 	return Response(
 		mimetype = "Application/json",
-		response = json.dumbs(res),
+		response = json.dumps(res),
 		status = status_code
 		)
