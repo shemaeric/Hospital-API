@@ -1,5 +1,6 @@
 from marshmallow import fields,Schema
 import datetime
+from . import db, bcrypt
 
 from . import db
 
@@ -15,7 +16,7 @@ class UserModel(db.Model):
 	created_at = db.Column(db.DateTime)
 	modified_at = db.Column(db.DateTime)
 
-	def __init__(self):
+	def __init__(self,data):
 
 		self.name = data.get('name')
 		self.email = data.get('email')
