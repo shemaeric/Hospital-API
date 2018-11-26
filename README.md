@@ -1,1 +1,1 @@
-# Patients and Doctors Informations API
+# Patients Informations API
