@@ -8,7 +8,7 @@ from ..models.UserModel import UserModel
 class Auth():
 
 	@staticmethod
-	def generate_token():
+	def generate_token(user_id):
 
 		try:
 
@@ -21,12 +21,10 @@ class Auth():
 
 			return jwt.encode(
 				payload,
-				app.config.get('SECRETE_KEY'),
-				algorithm='HS256'
-			)
+				os.getenv('SECRETE_KEY'),
+				'HS256'
+			).decode("utf-8")
 
-		except Exception as e:
-			return e
 	@staticmethod
 	def decode_auth():
 		"""
