@@ -63,7 +63,7 @@ def login():
 	if not user.check_hash(data.get('password')):
 		return custom_response({'error': 'invalid credentials'}, 400)
 	ser_data = user_schema.load(user).data
-	token = Auth.generate_token(ser_data)
+	token = Auth.generate_token(ser_data.get('id'))
 	print('hellllloheaven',token)
 	return custom_response({'jwt_token': token}, 200)
 
