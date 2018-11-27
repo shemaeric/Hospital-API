@@ -3,30 +3,25 @@ import os
 import datetime
 from flask import json, Response, request, g
 from functools import wraps
-from ..models.UserModel import UserModel
+from werkzeug.security import safe_str_cmp
+from ..models.UserModel import UserModel, UserSchema
+
+user_schema = UserSchema()
+JWT_SECRET_KEY = 'secret'
+JWT_ALGORITHM = 'HS256'
 
 class Auth():
 
 	@staticmethod
 	def generate_token(user_id):
-
-		try:
-
-			payload = {
-
-			    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-			    'iat': datetime.datetime.utcnow(),
-			    'sub': user_id
-			}
-
-			return jwt.encode(
-				payload,
-				os.getenv('SECRETE_KEY'),
-				'HS256'
-			).decode("utf-8")
-
+		payload = {
+				'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+				'sub': user_id
+		}
+		jwt_token = jwt.encode(payload, JWT_SECRET_KEY, 'HS256')
+		return Response({'token': jwt_token.decode('utf-8')})
 	@staticmethod
-	def decode_auth():
+	def decode_token(token):
 		"""
 		Decode token methode
 		"""
