@@ -1,10 +1,11 @@
 import jwt
 import os
 import datetime
-from flask import json, Response, request, g
+from flask import json, Response, request, g, make_response
 from functools import wraps
 from werkzeug.security import safe_str_cmp
 from ..models.UserModel import UserModel, UserSchema
+from ..models.PatientsModel import PatientModel,PatientSchema
 
 user_schema = UserSchema()
 JWT_SECRET_KEY = 'secret'
@@ -18,16 +19,16 @@ class Auth():
 				'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
 				'sub': user_id
 		}
-		jwt_token = jwt.encode(payload, JWT_SECRET_KEY, 'HS256')
-		return Response({'token': jwt_token.decode('utf-8')})
+		token = jwt.encode(payload, JWT_SECRET_KEY, 'HS256')
+		return json.dumps({'token': token.decode('utf-8')})
 	@staticmethod
 	def decode_token(token):
 		"""
-		Decode token methode
+		Decode token method
 		"""
 		re = {'data': {}, 'error': {}}
 		try:
-			payload = jwt.decode(token, os.getenv('JWT_SECRETE_KEY'))
+			payload = jwt.decode(token, JWT_SECRET_KEY)
 			re['data'] = {'user_id': payload['sub']}
 			return re
 		except jwt.ExpiredSignatureError as e1:
@@ -71,6 +72,6 @@ class Auth():
 					status=400
 				)
 			g.user = {'id': user_id}
-			return func(*args, **kwargs)
+			return func(user_id,*args, **kwargs)
 		return decorated_auth
 
