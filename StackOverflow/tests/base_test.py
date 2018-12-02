@@ -1,6 +1,6 @@
 from unittest import TestCase
-from .app import create_app
-from migrate import DBMigration
+from ..app import create_app
+# from migrate import DBMigration
 
 class BaseTestCase(TestCase):
 

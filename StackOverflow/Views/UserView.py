@@ -10,6 +10,7 @@ def create():
 
 	req_data = request.get_json(force=True)
 	data,error = user_schema.load(req_data)
+  
 
 	if error:
 		return custom_response(error, 400)
@@ -27,9 +28,9 @@ def create():
 	print("createghnd",token)
 	return custom_response({'jwt_token': token}, 201)
 
-@user_api.route('/me', methods=['GET'])
+@user_api.route('/me/<user_id>', methods=['GET'])
 @Auth.auth_required
-def get_a_user():
+def get_a_user(user_id):
 
 	user = UserModel.get_one_user(user_id)
 	if not user:
@@ -66,6 +67,20 @@ def login():
 	token = Auth.generate_token(ser_data.get('id'))
 	print('hellllloheaven',token)
 	return custom_response({'jwt_token': token}, 200)
+
+@user_api.route('/me', methods= ['PUT'])
+@Auth.auth_required
+def update(data):
+  req_data = request.get_json()
+  print("ddddd",req_data)
+  data, error = user_schema.load(req_data, partial = True)
+  if error:
+    return custom_response(error, 400)
+
+  user = UserModel.get_one_user(g.user.get('id'))
+  user.update(data)
+  ser_user = user_schema.dump(user).data
+  return custom_response(ser_user, 200)
 
 def custom_response(res, status_code):
 

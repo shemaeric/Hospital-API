@@ -27,9 +27,22 @@ class UserModel(db.Model):
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
+
+	def update(self, data):
+		for key, item in data.items():
+			if key == 'password':
+				self.password = self.__generate_hash(value)
+			setattr(self, key, item)
+		self.modified_at = datetime.datetime.utcnow()
+		db.session.commit()
+
 	@staticmethod
 	def get_user_by_email(value):
 		return UserModel.query.filter_by(email=value).first()
+
+	@staticmethod
+	def get_one_user(user_id):
+		return UserModel.query.get(user_id)
 
 	def __generate_hash(self, password):
 		return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")

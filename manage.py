@@ -1,7 +1,7 @@
 import os
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from StackOverflow.models import UserModel
+from StackOverflow.models import UserModel,PatientsModel
 
 
 env_name = os.getenv('FLASK_ENV', 'default')

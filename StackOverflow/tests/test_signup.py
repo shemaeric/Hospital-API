@@ -1,56 +1,32 @@
+import unittest
+import os
 import json
-from .base_test import BaseTestCase
+from ..app import create_app
 
-class TestUserRegister(BaseTestCase):
 
-  def test_registration(self):
-    with self.client:
-      response = self.client.post(
-        '/api/v1/users/',
-        data=json.dumps(dict(
-          name='shema',
-          email='myemail@mail.com',
-          password='shema123'
-        )),
-        content_type='application/json'
-      )
-      response_data = json.loads(response.data.decode())
-      print(response_data)
-      self.assertTrue(response_data['status'] == 'success')
-      self.assertTrue(response_data['Authorization'])
-      self.assertEqual(response.status_code, 201)
+class UsersTest(unittest.TestCase):
+  """
+  Users Test Case
+  """
+  def setUp(self):
+    """
+    Test Setup
+    """
+    self.app = create_app("testing")
+    self.client = self.app.test_client
+    self.user = {
+      'name': 'olawale',
+      'email': 'olawale@mail.com',
+      'password': 'passw0rd!'
+    }
 
-  def test_registration_with_invalid_email(self):
-    with self.client:
-      response = self.client.post(
-        '/api/v1/users/',
-        data=json.dumps(dict(
-          name='shema',
-          email='myemail@mail.com',
-          password='shema123'
-        )),
-        content_type='application/json'
-      )
-      response_data = json.loads(response.data.decode())
-      self.assertEqual(response.status_code, 403)
-
-  def test_registration_if_user_exits(self):
-    with self.client:
-      response = self.client.post(
-        '/api/v1/users',
-        data=json.dumps(dict(
-          name='shema',
-          email='paulla@gmail.com',
-          username='paulla',
-          password='mermaid'
-        )),
-        content_type='application/json'
-      )
-      response_data = json.loads(response.data.decode())
-      errors = {
-          "username": "The username you provided already exists",
-          "email": "The email you provided is in use by another user"
-      }
-      self.assertTrue(response_data['status'] == 'error')
-      self.assertTrue(response_data['message'] == errors)
-      self.assertEqual(response.status_code, 401)
+    with self.app.app_context():
+      # create all tables
+      db.create_all()
+  
+  def test_user_creation(self):
+    """ test user creation with valid credentials """
+    res = self.client().post('/api/v1/users/', headers={'Content-Type': 'application/json'}, data=json.dumps(self.user))
+    json_data = json.loads(res.data)
+    self.assertTrue(json_data.get('jwt_token'))
+    self.assertEqual(res.status_code, 201)
