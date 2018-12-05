@@ -11,10 +11,10 @@ install:
 
 before_script:
     - psql -c "create database stackoverflow;" -U postgres
-    - psql -c "create user postgres with password 'shema';" -U postgres
+
 
 script:
-    - py.test --cov=StackOverflow-lite
+    - pytest --cov=src --cov-config .coveragerc
 
 after_success:
     - coveralls
